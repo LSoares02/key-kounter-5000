@@ -108,7 +108,7 @@ ipcMain.handle("list-keyloggers", async () => {
 
 // MUSIC
 ipcMain.handle("get-audio-path", () => {
-  return path.join(__dirname, "src", "assets", "Release.mp3");
+  return path.join(__dirname, "assets", "Release.mp3");
 });
 ipcMain.on("toggle-music", () => {
   musicEnabled = !musicEnabled;
