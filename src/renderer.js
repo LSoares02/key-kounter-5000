@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     electronAPI.getCaptureState().then((state) => {
       isCapturing = state;
       toggleBtn.textContent = isCapturing ? "stop capture" : "start capture";
+      toggleBtn.classList.toggle("capturing", isCapturing);
     });
 
     toggleBtn.addEventListener("click", () => {
@@ -53,11 +54,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         // force quicker fade out when user finishes typing
         musicAPI.fadeOut();
         toggleBtn.textContent = "start capture";
+        toggleBtn.classList.remove("capturing");
       } else {
         electronAPI.startListening();
         // force quicker fade in when user starts from scratch
         keysSinceFadeIn = 15;
         toggleBtn.textContent = "stop capture";
+        toggleBtn.classList.add("capturing");
       }
       isCapturing = !isCapturing;
     });
@@ -78,13 +81,28 @@ document.addEventListener("DOMContentLoaded", async () => {
                   .map((f) => {
                     const match = f.match(/^keystrokes-(.+)\.json$/);
                     let dateStr = match ? match[1] : f;
-                    dateStr = dateStr.replace(/-\d{3}Z$/, "");
-                    const [date, time] = dateStr.split("T");
-                    const [, month, day] = date.split("-");
-                    // Formata hora
-                    const hour = time.replace(/-/g, ":");
+
+                    let isoStr = dateStr.replace(
+                      /(\d{4}-\d{2}-\d{2})T(\d{2})-(\d{2})-(\d{2})-(\d{3})Z/,
+                      "$1T$2:$3:$4.$5Z"
+                    );
+                    let localStr;
+                    try {
+                      const dateObj = new Date(isoStr);
+                      localStr = dateObj.toLocaleString("pt-BR", {
+                        day: "2-digit",
+                        month: "2-digit",
+
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: false,
+                      });
+                    } catch (e) {
+                      localStr = dateStr;
+                    }
                     // Adiciona data-filename ao li para identificação
-                    return `<li data-filename="${f}">${day}/${month} ${hour}</li>`;
+                    return `<li data-filename="${f}">${localStr}</li>`;
                   })
                   .join("");
 
@@ -111,7 +129,10 @@ document.addEventListener("DOMContentLoaded", async () => {
               const filename = closest.getAttribute("data-filename");
               if (filename) {
                 dataOrigin = filename;
-                updateDashboards(filename);
+                updateDashboards(
+                  filename,
+                  Intl.DateTimeFormat().resolvedOptions().timeZone
+                );
               }
             }
           }
@@ -164,6 +185,51 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  // Setas de scroll do playerSelector
+  const arrowUp = document.getElementById("playerSelector-arrow-up");
+  const arrowDown = document.getElementById("playerSelector-arrow-down");
+  const playerList = document.getElementById("playerSelector-list");
+
+  function scrollToSnap(direction) {
+    if (!playerList) return;
+    const items = Array.from(playerList.querySelectorAll("li"));
+    if (items.length === 0) return;
+    const listRect = playerList.getBoundingClientRect();
+    const listCenter = listRect.top + listRect.height / 2;
+    let closestIdx = 0;
+    let closestDist = Infinity;
+    items.forEach((li, idx) => {
+      const rect = li.getBoundingClientRect();
+      const itemCenter = rect.top + rect.height / 2;
+      const dist = Math.abs(itemCenter - listCenter);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestIdx = idx;
+      }
+    });
+    let targetIdx =
+      direction === "down"
+        ? Math.min(items.length - 1, closestIdx + 1)
+        : Math.max(0, closestIdx - 1);
+    const target = items[targetIdx];
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+
+  if (arrowUp) {
+    arrowUp.addEventListener("click", (e) => {
+      e.preventDefault();
+      scrollToSnap("up");
+    });
+  }
+  if (arrowDown) {
+    arrowDown.addEventListener("click", (e) => {
+      e.preventDefault();
+      scrollToSnap("down");
+    });
+  }
+
   // Ao pressionar tecla (via IPC)
   electronAPI.onKeyPressed((key) => {
     // 🎵 Controla música com base na digitação
@@ -181,7 +247,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (dataOrigin) {
-      updateDashboards(dataOrigin);
+      updateDashboards(
+        dataOrigin,
+        Intl.DateTimeFormat().resolvedOptions().timeZone
+      );
     }
 
     // 💡 Animação estilo terminal

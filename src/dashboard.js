@@ -12,7 +12,7 @@ let topKeysChart = null;
 let sessionTimesChart = null;
 let activityByPeriodChart = null;
 
-export async function updateDashboards(filename) {
+export async function updateDashboards(filename, timezone) {
   let rawData;
 
   if (!filename) {
@@ -40,10 +40,17 @@ export async function updateDashboards(filename) {
     type: "line",
     data: {
       labels: kpm.map((item) => {
-        const date = new Date(item.minute);
-        return date.toLocaleTimeString([], {
+        // Garante string UTC completa
+        let utcMinute = item.minute;
+        if (!utcMinute.endsWith("Z")) {
+          utcMinute += ":00Z";
+        }
+        const date = new Date(utcMinute);
+        return date.toLocaleTimeString("en-US", {
+          timeZone: timezone,
           hour: "2-digit",
           minute: "2-digit",
+          hour12: false,
         });
       }),
       datasets: [
@@ -92,8 +99,7 @@ export async function updateDashboards(filename) {
         {
           label: " top 5",
           data: topKeys.map((item) => item.count),
-          backgroundColor: [createHorizontalStripesPattern(topKeysCtx)],
-          borderColor: "#ff6600",
+          backgroundColor: createHorizontalStripesPattern(topKeysCtx),
           borderWidth: 2,
         },
       ],
@@ -123,7 +129,7 @@ export async function updateDashboards(filename) {
   if (activityByPeriodChart) {
     activityByPeriodChart.destroy();
   }
-  const activityByPeriod = getActivityByPeriod(rawData);
+  const activityByPeriod = getActivityByPeriod(rawData, timezone);
   const activityByPeriodCtx = document
     .getElementById("activityByPeriodCanvas")
     .getContext("2d");
@@ -141,9 +147,16 @@ export async function updateDashboards(filename) {
             activityByPeriod.night_owl,
           ],
           backgroundColor: [
+            createHorizontalStripesPattern(
+              activityByPeriodCtx,
+              "rgba(255, 78, 205, 0.35)"
+            ),
             createHorizontalStripesPattern(activityByPeriodCtx),
+            createHorizontalStripesPattern(
+              activityByPeriodCtx,
+              "rgba(162, 89, 247, 0.35)"
+            ),
           ],
-          borderColor: ["#ff6600", "#666666", "#666666"],
           borderWidth: 2,
         },
       ],
@@ -210,13 +223,13 @@ export async function updateDashboards(filename) {
 
 function createHorizontalStripesPattern(
   ctx,
-  color = "rgba(255, 102, 0, 0.2)",
+  color = "rgba(255, 102, 0, 0.35)",
   bgColor = "transparent",
   stripeHeight = 15,
   gap = 10
 ) {
   const patternCanvas = document.createElement("canvas");
-  patternCanvas.width = 16;
+  patternCanvas.width = 32;
   patternCanvas.height = stripeHeight + gap;
   const pctx = patternCanvas.getContext("2d");
 

@@ -65,16 +65,25 @@ export function calculateTopKeys(data, topN = 5) {
 /**
  * Agrupa a atividade por faixa de horário: manhã, tarde e noite.
  * @param {Array<{timestamp: string}>} data - Lista de eventos com timestamp.
- * @returns {{manha: number, tarde: number, noite: number}} - Contagem de eventos por período.
+ * @param {string} timezone - Timezone do cliente.
+ * @returns {{early_bird: number, worker_ant: number, night_owl: number}} - Contagem de eventos por período.
  */
-export function getActivityByPeriod(data) {
+export function getActivityByPeriod(data, timezone) {
   const periods = { early_bird: 0, worker_ant: 0, night_owl: 0 };
   if (!Array.isArray(data)) return periods;
   data.forEach(({ timestamp }) => {
-    const hour = new Date(timestamp).getHours();
-    if (hour >= 6 && hour < 12) {
+    // Converte timestamp UTC para local usando timezone
+    const date = new Date(timestamp);
+    const localHour = Number(
+      date.toLocaleString('en-US', {
+        timeZone: timezone,
+        hour: '2-digit',
+        hour12: false
+      })
+    );
+    if (localHour >= 6 && localHour < 12) {
       periods.early_bird++;
-    } else if (hour >= 12 && hour < 18) {
+    } else if (localHour >= 12 && localHour < 18) {
       periods.worker_ant++;
     } else {
       periods.night_owl++;
@@ -86,7 +95,7 @@ export function getActivityByPeriod(data) {
 /**
  * Calcula o tempo total de sessão, tempo ocioso e tempo ativo.
  * @param {Array<{timestamp: string}>} data - Lista de eventos com timestamp (ordenados ou não).
- * @returns {{full: number, tempoOcioso: number, tempoAtivo: number}} - Todos em milissegundos.
+ * @returns {{full: number, idleTime: number, activeTime: number}} - Todos em milissegundos.
  */
 export function calculateSessionTimes(data) {
   if (!data || data.length < 2) {

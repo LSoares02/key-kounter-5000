@@ -16,6 +16,7 @@ function createWindow() {
   win = new BrowserWindow({
     width: 500,
     height: 900,
+    icon: path.join(__dirname, "src", "assets", "icon.png"),
     webPreferences: {
       preload: path.join(__dirname, "src", "preload.js"),
       nodeIntegration: false,
