@@ -1,0 +1,25 @@
+{
+  "name": "key-kounter-5000",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "nodemon --ignore src/keyLogger --exec electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "chart.js": "^4.4.9",
+    "electron": "^35.2.0",
+    "node-global-key-listener": "^0.3.0",
+    "patternomaly": "^1.3.2"
+  },
+  "devDependencies": {
+    "electron-reload": "^2.0.0-alpha.1",
+    "nodemon": "^3.1.9"
+  }
+}

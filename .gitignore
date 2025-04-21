@@ -1,0 +1,53 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+*.swp
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pids
+*.pid
+*.seed
+*.log
+
+# Electron
+/dist/
+/out/
+*.asar
+
+# Ignore keyLogger contents except .gitkeep
+src/keyLogger/*
+!src/keyLogger/.gitkeep
+
+# VSCode
+.vscode/
+
+# Build output
+build/
+dist/
+
+# Env files
+.env
+.env.*
+
+# Others
+*.local
+*.sublime*
+.idea/
+.DS_Store
+*.tgz
+
+# Optional: OS trash
+.Trashes
+
+# Optional: Electron cache
+.cache/

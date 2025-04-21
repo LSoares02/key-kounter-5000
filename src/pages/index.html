@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>key kounter 5000</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="screen-home" class="screen">
+      <h1>key kounter<span class="retro5000">5000</span></h1>
+      <p>control and visualize keystrokes</p>
+
+      <div class="vertical-buttons">
+        <button id="toggleBtn">start capture</button>
+        <button id="viewStatsBtn">view statistics</button>
+        <button id="disquete">music</button>
+      </div>
+    </div>
+
+    <div id="screen-dashboard" class="screen" style="display: none">
+      <h1>keyboard statistics</h1>
+
+      <div id="playerSelector">
+        <div class="playerSelector-fade playerSelector-fade--top"></div>
+        <ul id="playerSelector-list">
+          <!-- keyLogs serão inseridos aqui via JS -->
+        </ul>
+        <div class="playerSelector-fade playerSelector-fade--bottom"></div>
+      </div>
+
+      <div class="charts">
+        <div class="card-container">
+          <div>total clicks</div>
+          <div id="totalClicks"></div>
+        </div>
+        <div class="card-container">
+          <div>average key interval</div>
+          <div id="averageKeyInterval"></div>
+        </div>
+        <div id="kpmChart">
+          <canvas id="kpmCanvas"></canvas>
+        </div>
+        <div id="topKeys">
+          <canvas id="topKeysCanvas"></canvas>
+        </div>
+        <div id="activityByPeriod">
+          <canvas id="activityByPeriodCanvas"></canvas>
+        </div>
+        <div id="sessionTimes">
+          <canvas id="sessionTimesCanvas"></canvas>
+        </div>
+      </div>
+      <div class="vertical-buttons">
+        <button id="toTopBtn" class="hidden">to top</button>
+        <button id="backBtn">back</button>
+      </div>
+    </div>
+
+    <script type="module" src="../renderer.js"></script>
+    <script type="module" src="../dashboard.js"></script>
+  </body>
+</html>
