@@ -1,4 +1,5 @@
 import { GlobalKeyboardListener } from "node-global-key-listener";
+import { fileURLToPath } from 'url';
 import path from "path";
 import fs from "fs";
 
@@ -6,7 +7,9 @@ let gkl;
 let currentLogFilePath;
 let keyPressListener; // <-- Aqui guardamos o callback
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function startKeyLogger(mainWindow) {
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");

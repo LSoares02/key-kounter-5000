@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain } from "electron";
+import { fileURLToPath } from 'url';
 import path from "path";
 import {
   getCurrentLogFilePath,
@@ -8,17 +9,20 @@ import {
 import fs from "fs";
 
 // electron-reload não suporta import direto em ES Modules, use import dinâmico:
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 let win;
 
 function createWindow() {
+  
   win = new BrowserWindow({
     width: 500,
     height: 900,
     icon: path.join(__dirname, "src", "assets", "icon.png"),
     webPreferences: {
       preload: path.join(__dirname, "src", "preload.js"),
+      contextIsolation: true,
       nodeIntegration: false,
       autoplayPolicy: "no-user-gesture-required", // <- permite autoplay
     },
