@@ -48,9 +48,9 @@
     }
   },
   "keywords": [],
-  "author": "",
+  "author": "Lucas Soares",
   "license": "ISC",
-  "description": "",
+  "description": "key kounter 5000 is a keylogger application that allows you to control and visualize keystrokes.",
   "dependencies": {
     "chart.js": "^4.4.9",
     "electron-squirrel-startup": "^1.0.1",
